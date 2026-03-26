@@ -5,6 +5,7 @@ from typing import List, Dict, Any
 from database import get_db
 import models, schemas
 import random
+from services.supabase_service import register_farmer_in_supabase
 
 router = APIRouter(prefix="/v1", tags=["USSD REST API"])
 
@@ -141,6 +142,21 @@ async def register_farmer_ussd(data: Dict[str, Any], db: Session = Depends(get_d
     db.add(new_farmer)
     db.commit()
     db.refresh(new_farmer)
+    
+    # Push to Supabase for real-time synchronization with the frontend
+    try:
+        import asyncio
+        asyncio.create_task(register_farmer_in_supabase({
+            "zedId": new_zed_id,
+            "name": data['name'],
+            "nrc": data['nrc'],
+            "phone": data['phone'],
+            "region": data['region'],
+            "status": "pending_lite",
+            "registeredDate": "2026-03-26"
+        }))
+    except Exception as e:
+        print(f"Supabase sync error: {str(e)}")
     
     return {
         "success": True,

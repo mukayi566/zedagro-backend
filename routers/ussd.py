@@ -38,7 +38,6 @@ async def ussd_handler(
     if text == "":
         return (
             "CON Welcome to ZEDAGRO 🌾\n"
-            "Food Reserve Agency of Zambia\n\n"
             "1. Check My Payment\n"
             "2. My FISP Voucher Status\n"
             "3. Track My Produce\n"
